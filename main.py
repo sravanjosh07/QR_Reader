@@ -17,6 +17,11 @@ def check(file):
     #Yes Barcode
     return True
 
+def take_snaps(cap):
+    for i in range(10):
+        ret, frame = cap.read()
+        cv2.imwrite()
+
 
 
 
