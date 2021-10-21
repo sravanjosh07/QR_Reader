@@ -1,42 +1,32 @@
-# import cv2
-# from pyzbar.pyzbar import decode
-#
-# def read_video(cap):
-#     while True:
-#         ret, frame = cap.read()
-#         frame = cv2.bitwise_not(frame)
-#         frame = frame[:200, 0:200]
-#         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-#         return frame
-#
-#
-# def checking_Qr(frame):
-#     code = decode(frame)
-#     if code == []:
-#         return False
-#     else:
-#         return True
-#
-# def decoding(frame):
-#     code = decode(frame)
-#     if code != []:
-#         the_code = barcode.data.decode('utf-8')
-#         return the_code
-#     else:
-#         pass
-#     return the_code
-#
-#
-#
-#
-# cap = cv2.VideoCapture(1)
-# while True:
-#     ret, frame = cap.read()
-#     frame = cv2.bitwise_not(frame)
-#     frame = frame[:200, 0:200]
-#     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-#     cv2.imshow("window", frame)
-#     cv2.waitKey(0) #& 0xFF == ord("q")
-# #
-# # if checking_Qr(frame) == True:
-# #     code = decoding(frame)
+
+import cv2
+from pyzbar.pyzbar import decode
+import time
+import winsound
+
+cap = cv2.VideoCapture(1)
+scanned_codes = []
+
+camera = True
+
+while camera == True:
+    ret, frame = cap.read()
+    frame = cv2.bitwise_not(frame)
+    frame = frame[:200, :200]
+
+    for code in decode(frame):
+        mycode = code.data.decode("utf-8")
+        if mycode not in scanned_codes:
+            print(mycode)
+            scanned_codes.append(mycode)
+            winsound.Beep( 500, 500)
+            time.sleep(5)
+        elif mycode in scanned_codes:
+            print(mycode)
+            winsound.Beep(1000, 1000)
+            time.sleep(5)
+        else:
+            pass
+
+    cv2.imshow("QR_Scanner", frame)
+    cv2.waitKey(1)
