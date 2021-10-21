@@ -2,10 +2,12 @@ import cv2
 from pyzbar.pyzbar import decode
 import time
 import winsound
+import datetime
+import csv
 
 cap = cv2.VideoCapture(1)
 scanned_codes = []
-
+csv = open("scanned_QRcodes.csv", "w")
 camera = True
 
 while camera == True:
@@ -18,6 +20,8 @@ while camera == True:
         if mycode not in scanned_codes:
             print(mycode)
             scanned_codes.append(mycode)
+            csv.write("{},{}\n".format(datetime.datetime.now(), mycode))
+            csv.flush()
             winsound.Beep( 500, 500)
             time.sleep(5)
         elif mycode in scanned_codes:
