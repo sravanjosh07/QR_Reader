@@ -6,7 +6,7 @@ A [QR code](https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobi
 The video feed is preprocessed and fed into the [pyzbar](https://pypi.org/project/pyzbar/) function, which detects and decodes the QR code.
 
 ## Adding sound and writing the output
-sound is played when the code finding is a success, a timer is set to freeze the recording to prevent further detection of the same QR-code. The output is then appended to a list, which can be used to detect the duplicates of the scanned code.  
+Sound is played when the code finding is a success, a timer is set to freeze the recording to prevent further detection of the same QR-code. The output is then appended to a list, which can be used to detect the duplicates of the scanned code.  
 
 
 
