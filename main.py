@@ -16,7 +16,6 @@ scale_percent = 70  # percent of original size
 
 while camera == True:
     ret, frame = cap.read()
-
     '''
     scaling the frame, because opencv cant show large images in a single window'''
     width = int(frame.shape[1] * scale_percent / 100)
@@ -25,11 +24,11 @@ while camera == True:
     # resize image
 
     frame = cv2.resize(frame, dim, interpolation=cv2.INTER_AREA)
-
     frame_crop = frame[-square:, int(frame.shape[1]/2-square/2):int(frame.shape[1]/2+square/2)]
     frame_crop = cv2.bitwise_not(frame_crop)
     frame_crop = cv2.cvtColor(frame_crop, cv2.COLOR_BGR2GRAY)
-    ret, frame_crop = cv2.threshold(frame_crop, 0, 255, cv2.THRESH_OTSU)
+    # frame_crop = cv2.blur(frame_crop, (3,3))
+    ret, frame_crop = cv2.threshold(frame_crop, 0, 255, cv2.THRESH_TOZERO)
 
     x = int(time.time())
 
@@ -60,6 +59,6 @@ while camera == True:
         (0, 255, 0),
         thickness=3)
     cv2.imshow("QR_Scanner", frame)
-    # cv2.imshow("QR_Scanner thresh", frame_crop)
+    cv2.imshow("QR_Scanner thresh", frame_crop)
     cv2.waitKey(1)
 print(scanned_data_dict)
