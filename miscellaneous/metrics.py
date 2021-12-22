@@ -1,3 +1,23 @@
+# import os
+#
+# import cv2 as cv
+# from pyzbar.pyzbar import decode
+# input_path = r"C:\Users\opv-operator\Desktop\QR_Reader\undetected"
+# for filename in os.listdir(input_path):
+#     if filename.endswith('.jpg') or filename.endswith('.png'):
+#         print(filename)
+#         img_path = os.path.join(input_path, filename)
+#         img = cv.imread(img_path, 0)
+#         img = cv.bitwise_not(img)
+#         ret, th1 = cv.threshold(img, 150, 255, cv.THRESH_OTSU)
+#         th2 = cv.adaptiveThreshold(img, 255, cv.ADAPTIVE_THRESH_MEAN_C, cv.THRESH_BINARY, 81, 15)
+#         # ret, th2 = cv.threshold(th2, 0, 255, cv.THRESH_OTSU)
+#         th3 = cv.adaptiveThreshold(img, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 61, 12)
+#         thresh_list = [th1, th2, th3]
+#         for frame in thresh_list:
+#             code = decode(frame)
+#             print(code)
+# #
 #
 # import cv2
 # from pyzbar.pyzbar import decode
@@ -57,7 +77,7 @@ from pyzbar.pyzbar import decode
 import time
 import cv2
 
-cap = cv2.VideoCapture(r'C:\Users\opv-operator\Desktop\QR_Reader\avivideos/sunlight_and_still.avi')
+cap = cv2.VideoCapture(r'C:\Users\opv-operator\Desktop\QR_Reader\avivideos/sunlight2.avi')
 # Get the frames per second
 fps = cap.get(cv2.CAP_PROP_FPS)
 print(fps)
@@ -73,6 +93,10 @@ dictionary_of_Boolean = {}
 
 frame_number = 0
 # cap.set(cv2.CAP_PROP_POS_FRAMES, frame_number)  # optional
+mean1 = 0
+mean2 = 0
+gaus1 = 0
+gaus2 = 0
 
 while True:  # and frame_number <= frame_count:
     # cap.set(cv2.CAP_PROP_POS_FRAMES, frame_number)
@@ -84,12 +108,21 @@ while True:  # and frame_number <= frame_count:
     print(cv2.mean(gray))
     # frame = cv2.blur(frame, (3,3))
     # ret, thresh1 = cv2.threshold(frame, 0, 255, cv2.THRESH_TOZERO)
-    # thresh1 = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 51, 11) #good light
-    # thresh1 = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 51, 2) #'little light'
-    # thresh1 = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 21, 5)
-    thresh1 = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 21, 2)
+    thresh1 = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 21, 11) #good light
+    thresh2 = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 21, 2) #'little light'
+    # thresh3 = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 21, 5)
+    thresh3 = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 81, 15)
+    thresh4 = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 21, 2)
     ret, thresh1 = cv2.threshold(thresh1, 0, 255, cv2.THRESH_OTSU)
     x = int(time.time())
+    code1 = decode(thresh1)
+    code2 = decode(thresh2)
+    code3 = decode(thresh3)
+    code4 = decode(thresh4)
+    mean1 += 1 if code1 else 0
+    mean2 += 1 if code2 else 0
+    gaus1 += 1 if code3 else 0
+    gaus2 += 1 if code4 else 0
     for code in decode(thresh1):
         code = code.data.decode("utf-8")
         print(code, 'at', frame_number)
@@ -100,12 +133,12 @@ while True:  # and frame_number <= frame_count:
             no_detected_frames += 1
         else:
             print("this frame is not decoded")
-
+    print(mean1,mean2,gaus1,gaus2)
     with open('metrics.csv', 'a') as csv:
         csv.write('{},{}\n'.format(frame_number, dictionary_of_Boolean[frame_number]))
         csv.flush()
     print(no_detected_frames)
 
     cv2.imshow("QR_Scanner", frame)
-    cv2.imshow("QR_Scanner thresh", thresh1)
+    cv2.imshow("QR_Scanner thresh", thresh2)
     cv2.waitKey(1)

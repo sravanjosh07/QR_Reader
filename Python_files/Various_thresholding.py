@@ -1,7 +1,7 @@
 #
 # import cv2
 # from pyzbar.pyzbar import decode
-# import time
+import time
 # import winsound
 # import datetime
 # from matplotlib import pyplot as plt
@@ -70,20 +70,39 @@
 # print(scanned_data_dict)
 
 import cv2 as cv
-import numpy as np
+import cv2
+from pyzbar.pyzbar import decode
 from matplotlib import pyplot as plt
-img = cv.imread('img_data/img5.jpg',0)
-img = cv.medianBlur(img,5)
-ret,th1 = cv.threshold(img,127,255,cv.THRESH_BINARY)
-th2 = cv.adaptiveThreshold(img,255,cv.ADAPTIVE_THRESH_MEAN_C,\
-            cv.THRESH_BINARY,51,5)
-th3 = cv.adaptiveThreshold(img,255,cv.ADAPTIVE_THRESH_GAUSSIAN_C,\
-            cv.THRESH_BINARY,51,5)
-titles = ['Original Image', 'Global Thresholding (v = 127)',
-            'Adaptive Mean Thresholding', 'Adaptive Gaussian Thresholding']
+
+img = cv.imread(r'C:\Users\opv-operator\Desktop\QR_Reader\undetected/frame33.jpg')
+
+neg_img = cv.bitwise_not(img)
+gray = cv.cvtColor(neg_img, cv.COLOR_BGR2GRAY)
+mean = cv.mean(gray)
+print(mean)
+# ret, th1 = cv.threshold(img, 115, 255, cv2.THRESH_OTSU)
+th1 = cv.adaptiveThreshold(gray, 255, cv.ADAPTIVE_THRESH_MEAN_C, cv.THRESH_BINARY, 81, 15)
+th2 = cv.adaptiveThreshold(gray, 255, cv.ADAPTIVE_THRESH_MEAN_C, cv.THRESH_BINARY, 51, 7)
+th3 = cv.adaptiveThreshold(gray, 255, cv.ADAPTIVE_THRESH_MEAN_C, cv.THRESH_BINARY, 21, 2)
+# ret, th2 = cv.threshold(th2, 0, 255, cv2.THRESH_OTSU)
+
+# th3 = cv.adaptiveThreshold(img, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY_INV, 51, -7)
+#
+# titles = ['Original Image', 'Global Thresholding (v = 127)',
+#           'Adaptive Mean Thresholding', 'Adaptive Gaussian Thresholding']
+titles = ['Original Image', 'Mean_threshold 81,15',
+          'Mean_threshold 51,7', 'Mean_threshold 21,2']
 images = [img, th1, th2, th3]
+i = 0
+for img in images:
+    i += 1
+    code = decode(img)
+    print(code, i)
+    # for code in decode(img):
+    #     print("loop2")
+    #     print(code)
 for i in range(4):
-    plt.subplot(2,2,i+1),plt.imshow(images[i],'gray')
+    plt.subplot(2, 2, i + 1), plt.imshow(images[i], 'gray')
     plt.title(titles[i])
-    plt.xticks([]),plt.yticks([])
+    plt.xticks([]), plt.yticks([])
 plt.show()
